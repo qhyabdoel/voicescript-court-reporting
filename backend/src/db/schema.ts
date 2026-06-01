@@ -19,7 +19,7 @@ export const jobStatusEnum = pgEnum("job_status", [
 ]);
 
 export const roleEnum = pgEnum("role", ["REPORTER", "EDITOR"]);
-export const jobTypeEnum = pgEnum('job_type', ["PHYSICAL", "REMOTE"])
+export const assignmentTypeEnum = pgEnum('assignment_type', ["PHYSICAL", "REMOTE"])
 
 export const users = pgTable('users', {
   id: serial('id').primaryKey(),
@@ -35,7 +35,7 @@ export const jobs = pgTable('jobs', {
   id: serial('id').primaryKey(),
   caseName: varchar('case_name', { length: 255 }).notNull(),
   durationMinutes: integer('duration_minutes').notNull(),
-  type: jobTypeEnum('type').notNull(),
+  assignmentType: assignmentTypeEnum('assignment_type').notNull(),
   city: varchar('city', { length: 100 }), // nullable for remote jobs
   status: jobStatusEnum('status').notNull().default('NEW'),
 

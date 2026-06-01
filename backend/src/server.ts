@@ -15,8 +15,8 @@ app.register(cors, {
   origin: "http://localhost:3000"
 })
 
-app.register(reporterRoutes, { prefix: '/reporters' })
-app.register(jobRoutes, { prefix: '/jobs' })
+app.register(reporterRoutes, { prefix: '/api/reporters' })
+app.register(jobRoutes, { prefix: '/api/jobs' })
 
 const start = async () => {
   try {

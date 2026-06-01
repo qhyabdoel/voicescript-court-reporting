@@ -9,7 +9,7 @@ export type User = {
 export type Job = {
   caseName: string;
   durationMinutes: number;
-  type: "PHYSICAL" | "REMOTE";
+  assignmentType: "PHYSICAL" | "REMOTE";
   city?: string;
   status?: "NEW" | "ASSIGNED" | "TRANSCRIBED" | "REVIEWED" | "COMPLETED";
   reporterId?: number;

@@ -5,10 +5,23 @@ import type { Job } from "../types.js";
 import { createJobSchema } from "../schemas/job.schema.js";
 
 export async function jobRoutes(app: FastifyInstance) {
-  app.get("/", async () => {
-    // Get all jobs
-    const jobsData = await db.select().from(jobs);
-    return jobsData;
+  app.get("/", async (request, reply) => {
+    try {
+      // Get all jobs
+      const jobsData = await db.select().from(jobs);
+      return reply.status(200).send({
+        success: true,
+        message: "Jobs fetched successfully",
+        data: jobsData,
+      });
+    } catch (error) {
+      request.log.error(error);
+      return reply.status(500).send({
+        success: false,
+        message: "Failed to get jobs",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   });
 
   app.post<{ Body: Job }>(
@@ -27,7 +40,7 @@ export async function jobRoutes(app: FastifyInstance) {
             id: newJob.id,
             caseName: newJob.caseName,
             durationMinutes: newJob.durationMinutes,
-            type: newJob.type,
+            type: newJob.assignmentType,
             city: newJob.city,
             status: newJob.status,
           },
