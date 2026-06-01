@@ -1,5 +1,7 @@
 import { db, client } from "./index";
 import { users } from "./schema";
+import seedData from "../data/users.json"
+import type { User } from "../types";
 
 async function main() {
   console.log("⏳ Seeding database with user data...");
@@ -8,61 +10,8 @@ async function main() {
   console.log("🧹 Cleaning existing users...");
   await db.delete(users);
 
-  // Insert mock data for reporters and editors
-  const seedData = [
-    {
-      name: "Sarah Jenkins",
-      role: "REPORTER" as const,
-      city: "New York",
-      isAvailable: true,
-      basePayRate: "150.00",
-    },
-    {
-      name: "David Chen",
-      role: "REPORTER" as const,
-      city: "Los Angeles",
-      isAvailable: true,
-      basePayRate: "165.50",
-    },
-    {
-      name: "Maria Rodriguez",
-      role: "REPORTER" as const,
-      city: "Chicago",
-      isAvailable: false,
-      basePayRate: "155.00",
-    },
-    {
-      name: "James Wilson",
-      role: "REPORTER" as const,
-      city: "Houston",
-      isAvailable: true,
-      basePayRate: "145.00",
-    },
-    {
-      name: "Emily Taylor",
-      role: "EDITOR" as const,
-      city: "New York",
-      isAvailable: true,
-      basePayRate: "85.00",
-    },
-    {
-      name: "Michael Brown",
-      role: "EDITOR" as const,
-      city: "Chicago",
-      isAvailable: true,
-      basePayRate: "90.00",
-    },
-    {
-      name: "Jessica Davis",
-      role: "EDITOR" as const,
-      city: "Los Angeles",
-      isAvailable: false,
-      basePayRate: "88.50",
-    },
-  ];
-
   console.log(`🌱 Inserting ${seedData.length} users...`);
-  const insertedUsers = await db.insert(users).values(seedData).returning();
+  const insertedUsers = await db.insert(users).values(seedData as User[]).returning();
 
   console.log("✅ Database seeded successfully!");
   console.table(
