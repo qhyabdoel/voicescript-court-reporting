@@ -4,9 +4,10 @@ export type User = {
   city: string;
   isAvailable: boolean;
   basePayRate: string;
-}
+};
 
 export type Job = {
+  id?: number;
   caseName: string;
   durationMinutes: number;
   assignmentType: "PHYSICAL" | "REMOTE";
@@ -17,4 +18,4 @@ export type Job = {
   reporterRateApplied?: string;
   editorFeeApplied?: string;
   totalPayout?: string;
-}
+};

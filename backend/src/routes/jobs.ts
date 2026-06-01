@@ -1,19 +1,41 @@
 import { FastifyInstance } from "fastify";
 import { db } from "../db/index.js";
 import { jobs } from "../db/schema.js";
-import type { Job } from "../types.js";
+import { sql } from "drizzle-orm";
+import type { Job } from "types";
 import { createJobSchema } from "../schemas/job.schema.js";
 import { sendSuccess, sendError } from "../utils/response.js";
 
 export async function jobRoutes(app: FastifyInstance) {
-  app.get("/", async (request, reply) => {
-    try {
-      const jobsData = await db.select().from(jobs);
-      return sendSuccess(reply, jobsData, "Jobs fetched successfully");
-    } catch (error) {
-      return sendError(reply, request, error, "Failed to get jobs");
-    }
-  });
+  app.get<{ Querystring: { limit?: string; offset?: string } }>(
+    "/",
+    async (request, reply) => {
+      try {
+        const limit = Math.min(parseInt(request.query.limit || "10"), 100);
+        const offset = Math.max(parseInt(request.query.offset || "0"), 0);
+
+        const [jobsData, [{ count }]] = await Promise.all([
+          db.select().from(jobs).limit(limit).offset(offset),
+          db.select({ count: sql<number>`count(*)` }).from(jobs),
+        ]);
+
+        return sendSuccess(
+          reply,
+          {
+            data: jobsData,
+            pagination: {
+              limit,
+              offset,
+              total: count,
+            },
+          },
+          "Jobs fetched successfully",
+        );
+      } catch (error) {
+        return sendError(reply, request, error, "Failed to get jobs");
+      }
+    },
+  );
 
   app.post<{ Body: Job }>(
     "/",
@@ -25,16 +47,16 @@ export async function jobRoutes(app: FastifyInstance) {
       } catch (error) {
         return sendError(reply, request, error, "Failed to create job");
       }
-    }
+    },
   );
 
-  app.post<{ Params: { id: number }, Body: { reporterId: number } }>(
+  app.post<{ Params: { id: number }; Body: { reporterId: number } }>(
     "/:id/assign-reporter",
     async (request) => {
       return {
         jobId: request.params.id,
         reporterId: request.body.reporterId,
-      }
-    }
-  )
+      };
+    },
+  );
 }
