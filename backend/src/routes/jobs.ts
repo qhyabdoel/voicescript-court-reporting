@@ -3,24 +3,15 @@ import { db } from "../db/index.js";
 import { jobs } from "../db/schema.js";
 import type { Job } from "../types.js";
 import { createJobSchema } from "../schemas/job.schema.js";
+import { sendSuccess, sendError } from "../utils/response.js";
 
 export async function jobRoutes(app: FastifyInstance) {
   app.get("/", async (request, reply) => {
     try {
-      // Get all jobs
       const jobsData = await db.select().from(jobs);
-      return reply.status(200).send({
-        success: true,
-        message: "Jobs fetched successfully",
-        data: jobsData,
-      });
+      return sendSuccess(reply, jobsData, "Jobs fetched successfully");
     } catch (error) {
-      request.log.error(error);
-      return reply.status(500).send({
-        success: false,
-        message: "Failed to get jobs",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+      return sendError(reply, request, error, "Failed to get jobs");
     }
   });
 
@@ -29,29 +20,10 @@ export async function jobRoutes(app: FastifyInstance) {
     { schema: createJobSchema },
     async (request, reply) => {
       try {
-        // Create a new job and return the inserted row
-        const insertedJobs = await db.insert(jobs).values(request.body).returning();
-        const newJob = insertedJobs[0];
-
-        return reply.status(201).send({
-          success: true,
-          message: "Job created successfully",
-          data: {
-            id: newJob.id,
-            caseName: newJob.caseName,
-            durationMinutes: newJob.durationMinutes,
-            type: newJob.assignmentType,
-            city: newJob.city,
-            status: newJob.status,
-          },
-        });
+        const [newJob] = await db.insert(jobs).values(request.body).returning();
+        return sendSuccess(reply, newJob, "Job created successfully", 201);
       } catch (error) {
-        request.log.error(error);
-        return reply.status(500).send({
-          success: false,
-          message: "Failed to create job",
-          error: error instanceof Error ? error.message : "Unknown error",
-        });
+        return sendError(reply, request, error, "Failed to create job");
       }
     }
   );
