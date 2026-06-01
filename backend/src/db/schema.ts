@@ -11,10 +11,10 @@ import {
 import { relations } from "drizzle-orm";
 
 export const jobStatusEnum = pgEnum("job_status", [
-  "DRAFT",
+  "NEW",
   "ASSIGNED",
-  "TRANSCRIBING",
-  "IN_REVIEW",
+  "TRANSCRIBED",
+  "REVIEWED",
   "COMPLETED"
 ]);
 
@@ -35,9 +35,9 @@ export const jobs = pgTable('jobs', {
   id: serial('id').primaryKey(),
   caseName: varchar('case_name', { length: 255 }).notNull(),
   durationMinutes: integer('duration_minutes').notNull(),
-  jobType: jobTypeEnum('job_type').notNull(),
+  type: jobTypeEnum('type').notNull(),
   city: varchar('city', { length: 100 }), // nullable for remote jobs
-  status: jobStatusEnum('status').notNull().default('DRAFT'),
+  status: jobStatusEnum('status').notNull().default('NEW'),
 
   // Assignments
   reporterId: integer('reporter_id').references(() => users.id),

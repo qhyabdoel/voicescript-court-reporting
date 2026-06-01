@@ -8,6 +8,20 @@
       "when": 1780296867102,
       "tag": "0000_sharp_swordsman",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1780300918814,
+      "tag": "0001_nice_dagger",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1780301355333,
+      "tag": "0002_conscious_ben_urich",
+      "breakpoints": true
     }
   ]
 }

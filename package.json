@@ -8,7 +8,7 @@
     "build": "pnpm --recursive build",
     "start": "pnpm --recursive start",
     "backend:dev": "pnpm --filter backend dev",
-    "frondend:dev": "pnpm --filter frontend dev",
+    "frontend:dev": "pnpm --filter frontend dev",
     "db:generate": "pnpm --filter backend db:generate",
     "db:push": "pnpm --filter backend db:push",
     "db:seed": "pnpm --filter backend db:seed"

@@ -1,15 +1,15 @@
 export const createJobSchema = {
   body: {
     type: "object",
-    required: ["caseName", "durationMinutes", "jobType"],
+    required: ["caseName", "durationMinutes", "type"],
     properties: {
       caseName: { type: "string", minLength: 1, maxLength: 255 },
       durationMinutes: { type: "integer", minimum: 1 },
-      jobType: { type: "string", enum: ["PHYSICAL", "REMOTE"] },
+      type: { type: "string", enum: ["PHYSICAL", "REMOTE"] },
       city: { type: "string", minLength: 1, maxLength: 100 },
       status: {
         type: "string",
-        enum: ["DRAFT", "ASSIGNED", "TRANSCRIBING", "IN_REVIEW", "COMPLETED"],
+        enum: ["NEW", "ASSIGNED", "TRANSCRIBED", "REVIEWED", "COMPLETED"],
       },
       reporterId: { type: "integer" },
       editorId: { type: "integer" },

@@ -9,9 +9,9 @@ export type User = {
 export type Job = {
   caseName: string;
   durationMinutes: number;
-  jobType: "PHYSICAL" | "REMOTE";
+  type: "PHYSICAL" | "REMOTE";
   city?: string;
-  status?: "DRAFT" | "ASSIGNED" | "TRANSCRIBING" | "IN_REVIEW" | "COMPLETED";
+  status?: "NEW" | "ASSIGNED" | "TRANSCRIBED" | "REVIEWED" | "COMPLETED";
   reporterId?: number;
   editorId?: number;
   reporterRateApplied?: string;
