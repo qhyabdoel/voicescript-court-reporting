@@ -11,7 +11,7 @@ export type Job = {
   durationMinutes: number;
   jobType: "PHYSICAL" | "REMOTE";
   city?: string;
-  status: "DRAFT" | "ASSIGNED" | "TRANSCRIBING" | "IN_REVIEW" | "COMPLETED";
+  status?: "DRAFT" | "ASSIGNED" | "TRANSCRIBING" | "IN_REVIEW" | "COMPLETED";
   reporterId?: number;
   editorId?: number;
   reporterRateApplied?: string;

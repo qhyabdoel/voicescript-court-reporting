@@ -37,7 +37,7 @@ export const jobs = pgTable('jobs', {
   durationMinutes: integer('duration_minutes').notNull(),
   jobType: jobTypeEnum('job_type').notNull(),
   city: varchar('city', { length: 100 }), // nullable for remote jobs
-  status: jobStatusEnum('status').notNull(),
+  status: jobStatusEnum('status').notNull().default('DRAFT'),
 
   // Assignments
   reporterId: integer('reporter_id').references(() => users.id),
