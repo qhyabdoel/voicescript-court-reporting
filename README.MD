@@ -91,3 +91,9 @@ pnpm backend:dev
 - If Docker is not running, start it before running `docker-compose up -d`
 - If you encounter database connection errors, ensure PostgreSQL is running on port 5432
 - Clear node_modules and reinstall with `pnpm install` if you experience dependency issues
+
+## Screenshots
+
+### Job List - First Page
+
+![Job List - First Page](./screenshots/job-list-page-1.png)
