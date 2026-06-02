@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { db } from "../db/index.js";
-import { jobs, users } from "../db/schema.js";
+import { jobs, users, jobRelations } from "../db/schema.js";
 import { sql, eq, desc } from "drizzle-orm";
 import type { Job, JobStatus } from "types";
 import { createJobSchema } from "../schemas/job.schema.js";
@@ -71,9 +71,57 @@ export async function jobRoutes(app: FastifyInstance) {
     "/:id",
     async (request: FastifyRequest<{ Params: { id: number } }>, reply:FastifyReply) => {
       try {
-        // TODO: join with users table to get reporter and editor info
-        const [job] = await db.select().from(jobs).where(eq(jobs.id, request.params.id)).limit(1);
-        return sendSuccess(reply, job, "Job fetched successfully");
+        const [job] = await db.select({
+          id: jobs.id,
+          caseName: jobs.caseName,
+          durationMinutes: jobs.durationMinutes,
+          assignmentType: jobs.assignmentType,
+          city: jobs.city,
+          status: jobs.status,
+          reporterId: jobs.reporterId,
+          editorId: jobs.editorId,
+          reporterRateApplied: jobs.reporterRateApplied,
+          editorFeeApplied: jobs.editorFeeApplied,
+          totalPayout: jobs.totalPayout,
+          createdAt: jobs.createdAt,
+          updatedAt: jobs.updatedAt,
+        }).from(jobs).where(eq(jobs.id, request.params.id)).limit(1);
+
+        if (!job) {
+          return sendError(reply, request, new Error("Job not found"), "Job not found", 404);
+        }
+
+        // Fetch reporter and editor data if assigned
+        let reporter = null;
+        let editor = null;
+
+        if (job.reporterId) {
+          const [reporterData] = await db.select({
+            id: users.id,
+            name: users.name,
+            role: users.role,
+            city: users.city,
+          }).from(users).where(eq(users.id, job.reporterId)).limit(1);
+          reporter = reporterData;
+        }
+
+        if (job.editorId) {
+          const [editorData] = await db.select({
+            id: users.id,
+            name: users.name,
+            role: users.role,
+            city: users.city,
+          }).from(users).where(eq(users.id, job.editorId)).limit(1);
+          editor = editorData;
+        }
+
+        const jobWithRelations = {
+          ...job,
+          reporter,
+          editor,
+        };
+
+        return sendSuccess(reply, jobWithRelations, "Job fetched successfully");
       } catch (error) {
         return sendError(reply, request, error, "Failed to get job");
       }

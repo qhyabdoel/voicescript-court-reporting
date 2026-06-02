@@ -150,7 +150,7 @@ export default function JobDetailPage() {
                 {job.reporterRateApplied && (
                   <>
                   <p>
-                    <span>Reporter:</span> 
+                    <span>Reporter:</span> {job.reporter?.name}
                   </p>
                     <p>
                       <span className="font-medium">Reporter Pay Rate:</span> Rp {job.reporterRateApplied||0} per audio minute
@@ -159,6 +159,9 @@ export default function JobDetailPage() {
                 )}
                 {job.editorId && (
                   <>
+                    <p>
+                      <span>Editor:</span> {job.editor?.name}
+                    </p>
                     <p>
                       <span className="font-medium">Editor Fee:</span> Rp {job.editorFeeApplied||0}
                     </p>
