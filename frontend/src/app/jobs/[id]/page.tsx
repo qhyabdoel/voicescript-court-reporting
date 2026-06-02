@@ -16,6 +16,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AssignReporterModal from "./components/AssignReporterModal";
+import { formatCurrency } from "@/lib/utils";
 
 const JOB_STATUS = {
   NEW: 'NEW',
@@ -153,7 +154,7 @@ export default function JobDetailPage() {
                     <span>Reporter:</span> {job.reporter?.name}
                   </p>
                     <p>
-                      <span className="font-medium">Reporter Pay Rate:</span> Rp {job.reporterRateApplied||0} per audio minute
+                      <span className="font-medium">Reporter Pay Rate:</span> Rp {formatCurrency(Number(job.reporterRateApplied||0))} per audio minute
                     </p>
                   </>
                 )}
@@ -163,13 +164,13 @@ export default function JobDetailPage() {
                       <span>Editor:</span> {job.editor?.name}
                     </p>
                     <p>
-                      <span className="font-medium">Editor Fee:</span> Rp {job.editorFeeApplied||0}
+                      <span className="font-medium">Editor Fee:</span> Rp {formatCurrency(Number(job.editorFeeApplied||0))}
                     </p>
                   </>
                 )}
                 {job.totalPayout && (
                   <p>
-                    <span className="font-medium">Total Pay:</span> Rp {job.totalPayout||0}
+                    <span className="font-medium">Total Pay:</span> Rp {formatCurrency(Number(job.totalPayout))}
                   </p>
                 )}
                 <p>

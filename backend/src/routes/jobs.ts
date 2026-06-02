@@ -186,6 +186,7 @@ export async function jobRoutes(app: FastifyInstance) {
 
       try {
         // if status completed, calculate total payout
+        // total payout = reporter rate * duration + editor fee
         let totalPayout = null;
         if (request.body.status === 'COMPLETED') {
           const job = await db.select().from(jobs).where(eq(jobs.id, request.params.id)).limit(1);
@@ -194,8 +195,8 @@ export async function jobRoutes(app: FastifyInstance) {
             throw new Error("Job not found");
           }
 
-          if (job[0].reporterRateApplied && job[0].editorFeeApplied) {
-            totalPayout = job[0].reporterRateApplied + job[0].editorFeeApplied;
+          if (job[0].reporterRateApplied && job[0].editorFeeApplied && job[0].durationMinutes) {
+            totalPayout = String(Number(job[0].reporterRateApplied) * Number(job[0].durationMinutes) + Number(job[0].editorFeeApplied));
           }
         }
         const job = await db.update(jobs).set({

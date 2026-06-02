@@ -4,83 +4,83 @@
     "role": "REPORTER",
     "city": "Jakarta",
     "isAvailable": true,
-    "basePayRate": "80.00"
+    "basePayRate": "10000.00"
   },
   {
     "name": "Nisa Khoirunnisa",
     "role": "REPORTER",
     "city": "Bandung",
     "isAvailable": true,
-    "basePayRate": "170.00"
+    "basePayRate": "17000.00"
   },
   {
     "name": "Budi Santoso",
     "role": "REPORTER",
     "city": "Bandung",
     "isAvailable": true,
-    "basePayRate": "160.00"
+    "basePayRate": "16000.00"
   },
   {
     "name": "Siti Aminah",
     "role": "REPORTER",
     "city": "Bandung",
     "isAvailable": true,
-    "basePayRate": "155.00"
+    "basePayRate": "15500.00"
   },
   {
     "name": "Aep Saepulloh",
     "role": "REPORTER",
     "city": "Jakarta",
     "isAvailable": false,
-    "basePayRate": "85.00"
+    "basePayRate": "8500.00"
   },
   {
     "name": "Mira Safitri",
     "role": "EDITOR",
     "city": "Bandung",
     "isAvailable": true,
-    "basePayRate": "95.00"
+    "basePayRate": "19500.00"
   },
   {
     "name": "Iqbal Maulana",
     "role": "EDITOR",
     "city": "Jakarta",
     "isAvailable": true,
-    "basePayRate": "100.00"
+    "basePayRate": "110000.00"
   },
   {
     "name": "Rina Wijaya",
     "role": "REPORTER",
     "city": "Surabaya",
     "isAvailable": true,
-    "basePayRate": "98.00"
+    "basePayRate": "9800.00"
   },
   {
     "name": "Andi Prasetyo",
     "role": "REPORTER",
     "city": "Surabaya",
     "isAvailable": true,
-    "basePayRate": "92.00"
+    "basePayRate": "9200.00"
   },
   {
     "name": "Sari Dewi",
     "role": "REPORTER",
     "city": "Jakarta",
     "isAvailable": true,
-    "basePayRate": "90.00"
+    "basePayRate": "9000.00"
   },
   {
     "name": "John Doe",
     "role": "EDITOR",
     "city": "Jakarta",
     "isAvailable": true,
-    "basePayRate": "100.00"
+    "basePayRate": "210000.00"
   },
   {
     "name": "Jane Smith",
     "role": "EDITOR",
     "city": "Bandung",
     "isAvailable": true,
-    "basePayRate": "95.00"
+    "basePayRate": "29500.00"
   }
 ]
