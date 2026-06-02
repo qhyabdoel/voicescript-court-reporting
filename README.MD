@@ -97,3 +97,35 @@ pnpm backend:dev
 ### Job List - First Page
 
 ![Job List - First Page](./screenshots/job-list-page-1.png)
+
+### Job List - Third Page
+
+![Job List - Third Page](./screenshots/job-list-page-3.png)
+
+### Job Detail - New
+
+![Job Detail - New](./screenshots/job-detail-new.png)
+
+### Job Detail - Assigned
+
+![Job Detail - Assigned](./screenshots/job-detail-assigned.png)
+
+### Job Detail - Transcribed
+
+![Job Detail - Transcribed](./screenshots/job-detail-transcribed.png)
+
+### Job Detail - Reviewed
+
+![Job Detail - Reviewed](./screenshots/job-detail-reviewed.png)
+
+### Job Detail - Completed
+
+![Job Detail - Completed](./screenshots/job-detail-completed.png)
+
+### Assign Reporter Modal
+
+![Assign Reporters Modal](./screenshots/assign-reporter.png)
+
+### Assign Editor Modal
+
+![Assign Editors Modal](./screenshots/assign-editor.png)
