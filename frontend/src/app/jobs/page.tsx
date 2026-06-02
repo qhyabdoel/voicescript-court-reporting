@@ -183,7 +183,11 @@ export default function JobsPage() {
                         href={`/jobs/${job.id}`}
                         className="text-blue-500 hover:text-blue-700"
                       >
-                        View
+                        {job.status === "NEW" 
+                          ? "Assign Reporter" 
+                          : job.status === "COMPLETED" 
+                            ? "View" 
+                            : "Update Status"}
                       </Link>
                     </td>
                   </tr>

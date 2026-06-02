@@ -2,24 +2,18 @@
 
 import PageHeader from "@/components/PageHeader";
 import { getJobById, getReporters, assignReporter } from "@/lib/api";
-import { Job } from "types";
+import { Job, User } from "types";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-
-interface Reporter {
-  id: number;
-  name: string;
-  city: string;
-  isAvailable: boolean;
-  basePayRate: string;
-}
+import Link from "next/link";
+import AssignReporterModal from "./components/AssignReporterModal";
 
 export default function JobDetailPage() {
   const params = useParams();
   const [job, setJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [reporters, setReporters] = useState<Reporter[]>([]);
+  const [reporters, setReporters] = useState<User[]>([]);
   const [selectedReporterId, setSelectedReporterId] = useState<number | null>(null);
   const [isAssigning, setIsAssigning] = useState(false);
 
@@ -69,7 +63,15 @@ export default function JobDetailPage() {
   return (
     <>
       <PageHeader title="Job Detail" />
-      <section className="text-gray-600 space-y-6">
+      <section className="text-gray-600 space-y-4">
+        <div className="">
+          <Link
+            href="/jobs"
+            className="inline-flex items-center text-blue-500 hover:text-blue-600"
+          >
+            ← Back to Job List
+          </Link>
+        </div>
         <div className="max-w-3xl">
           {job ? (
             <div className="bg-white rounded-lg shadow p-6">
@@ -122,13 +124,27 @@ export default function JobDetailPage() {
                 </p>
               </div>
 
-              <div>
-                <button 
-                  onClick={handleOpenModal}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
-                >
-                  Assign Reporter
-                </button>
+              <div className="space-y-3">
+                {job.status === 'NEW' && (
+                  <div>
+                    <button 
+                      onClick={handleOpenModal}
+                      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
+                    >
+                      Assign Reporter
+                    </button>
+                  </div>
+                )}
+                {job.status !== 'NEW' && !job.editorId && (
+                  <div>
+                    <button 
+                      onClick={handleOpenModal}
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
+                    >
+                      Assign Editor
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           ) : (
@@ -140,48 +156,14 @@ export default function JobDetailPage() {
       </section>
 
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center pt-32 z-50 text-gray-800">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md h-fit">
-            <h3 className="text-lg font-semibold mb-4">Assign Reporter</h3>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Reporter
-              </label>
-              <select
-                value={selectedReporterId || ""}
-                onChange={(e) => setSelectedReporterId(Number(e.target.value))}
-                className="w-full border border-gray-300 rounded px-3 py-2"
-              >
-                <option value="">Select a reporter</option>
-                {reporters.map((reporter) => (
-                  <option key={reporter.id} value={reporter.id}>
-                    {reporter.name} - {reporter.city} (Rp {reporter.basePayRate}/min)
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setSelectedReporterId(null);
-                }}
-                className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAssignReporter}
-                disabled={!selectedReporterId || isAssigning}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed cursor-pointer"
-              >
-                {isAssigning ? "Assigning..." : "Save"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <AssignReporterModal
+          selectedReporterId={selectedReporterId}
+          setSelectedReporterId={setSelectedReporterId}
+          reporters={reporters}
+          setIsModalOpen={setIsModalOpen}
+          handleAssignReporter={handleAssignReporter}
+          isAssigning={isAssigning}
+        />
       )}
     </>
   );
