@@ -1,5 +1,5 @@
 import PageHeader from "@/components/PageHeader";
-import { getJobs } from "../lib/api";
+import { getJobs } from "@/lib/api";
 import { Job } from "types";
 import Link from "next/link";
 
@@ -26,7 +26,19 @@ export default async function JobsPage() {
                 Case Name
               </th>
               <th className="border border-gray-300 px-4 py-2 text-left">
+                Duration
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Assignment Type
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                City
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
                 Status
+              </th>
+              <th className="border border-gray-300 px-4 py-2 text-left">
+                Actions
               </th>
             </tr>
           </thead>
@@ -38,7 +50,24 @@ export default async function JobsPage() {
                   {job.caseName}
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
+                  {job.durationMinutes} Minutes
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {job.assignmentType}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  {job.city || "N/A"}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
                   {job.status}
+                </td>
+                <td className="border border-gray-300 px-4 py-2">
+                  <Link
+                    href={`/jobs/${job.id}`}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    View
+                  </Link>
                 </td>
               </tr>
             ))}

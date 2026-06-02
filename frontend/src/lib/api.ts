@@ -20,8 +20,21 @@ export async function createJob(jobData: Job) {
     },
     body: JSON.stringify(jobData),
   });
+
+  const data = await response.json();
+
   if (!response.ok) {
-    throw new Error(`Failed to create job: ${response.statusText}`);
+    throw new Error(data.error || data.message || "Failed to create job");
+  }
+
+  return data;
+}
+
+export async function getJobById(id: string) {
+  console.log({ id });
+  const response = await fetch(`${API_URL}/jobs/${id}`);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch job: ${response.statusText}`);
   }
   return response.json();
 }
