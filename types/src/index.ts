@@ -18,5 +18,5 @@ export type Job = {
   reporterRateApplied?: string;
   editorFeeApplied?: string;
   totalPayout?: string;
-  createdAt?: string;
+  createdAt?: Date;
 };

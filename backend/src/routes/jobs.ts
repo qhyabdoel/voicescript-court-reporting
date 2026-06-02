@@ -1,15 +1,18 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { db } from "../db/index.js";
-import { jobs } from "../db/schema.js";
+import { jobs, users } from "../db/schema.js";
 import { sql, eq } from "drizzle-orm";
 import type { Job } from "types";
 import { createJobSchema } from "../schemas/job.schema.js";
 import { sendSuccess, sendError } from "../utils/response.js";
 
+type GetJobsRequest = FastifyRequest<{ Querystring: { limit?: string; offset?: string } }>;
+type AssignReporterRequest = FastifyRequest<{ Params: { id: number }; Body: { reporterId: number } }>;
+
 export async function jobRoutes(app: FastifyInstance) {
-  app.get<{ Querystring: { limit?: string; offset?: string } }>(
+  app.get(
     "/",
-    async (request, reply) => {
+    async (request: GetJobsRequest, reply: FastifyReply) => {
       try {
         const limit = Math.min(parseInt(request.query.limit || "10"), 100);
         const offset = Math.max(parseInt(request.query.offset || "0"), 0);
@@ -37,10 +40,10 @@ export async function jobRoutes(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Body: Job }>(
+  app.post(
     "/",
     { schema: createJobSchema },
-    async (request, reply) => {
+    async (request: FastifyRequest<{ Body: Job }>, reply: FastifyReply) => {
       try {
         const { assignmentType, city } = request.body;
 
@@ -62,9 +65,9 @@ export async function jobRoutes(app: FastifyInstance) {
     },
   );
 
-  app.get<{ Params: { id: number } }>(
+  app.get(
     "/:id",
-    async (request, reply) => {
+    async (request: FastifyRequest<{ Params: { id: number } }>, reply:FastifyReply) => {
       try {
         const [job] = await db.select().from(jobs).where(eq(jobs.id, request.params.id)).limit(1);
         return sendSuccess(reply, job, "Job fetched successfully");
@@ -74,13 +77,28 @@ export async function jobRoutes(app: FastifyInstance) {
     },
   );
 
-  app.post<{ Params: { id: number }; Body: { reporterId: number } }>(
+  app.post(
     "/:id/assign-reporter",
-    async (request) => {
-      return {
-        jobId: request.params.id,
-        reporterId: request.body.reporterId,
-      };
+    async (request: AssignReporterRequest, reply: FastifyReply) => {
+      if (!request.body.reporterId) {
+        throw new Error("Reporter ID is required");
+      }
+      
+      try {
+        const reporter = await db.select().from(users).where(eq(users.id, request.body.reporterId)).limit(1);
+        if (!reporter) {
+          throw new Error("Reporter not found");
+        }
+
+        const job = await db.update(jobs).set({ 
+          reporterId: request.body.reporterId,
+          status: 'ASSIGNED',
+          reporterRateApplied: reporter[0].basePayRate
+        }).where(eq(jobs.id, request.params.id)).returning();
+        return sendSuccess(reply, job, "Reporter assigned successfully");
+      } catch (error) {
+        return sendError(reply, request, error, "Failed to assign reporter");
+      }
     },
   );
 }

@@ -31,7 +31,7 @@ export async function createJob(jobData: Job) {
 }
 
 export async function getJobById(id: string) {
-  console.log({ id });
+  // console.log({ id });
   const response = await fetch(`${API_URL}/jobs/${id}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch job: ${response.statusText}`);
@@ -58,6 +58,8 @@ export async function assignReporter(jobId: string, reporterId: number) {
   });
 
   const data = await response.json();
+
+  console.log({ data });
 
   if (!response.ok) {
     throw new Error(data.error || data.message || "Failed to assign reporter");

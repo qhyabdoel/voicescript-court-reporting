@@ -6,18 +6,15 @@ import { createJobAction } from "@/lib/actions";
 import { useActionState } from "react";
 
 export default function CreateJobPage() {
-  const [state, formAction] = useActionState(
-    createJobAction,
-    {
-      error: undefined,
-      data: {
-        caseName: "",
-        durationMinutes: 10,
-        assignmentType: "PHYSICAL",
-        city: "",
-      }
-    }
-  );
+  const [state, formAction] = useActionState(createJobAction, {
+    error: undefined,
+    data: {
+      caseName: "",
+      durationMinutes: 10,
+      assignmentType: "PHYSICAL",
+      city: "",
+    },
+  });
 
   return (
     <>
