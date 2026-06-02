@@ -40,9 +40,11 @@ export default async function JobDetailPage({ params }: { params: { id: string }
                 <p>
                   <span className="font-medium">City:</span> {job.city}
                 </p>
-                <p>
-                  <span className="font-medium">Pay Rate:</span> ${job.payRate} per audio minute
-                </p>
+                {job.status !== 'NEW' && (
+                  <p>
+                    <span className="font-medium">Pay Rate:</span> ${job.payRate} per audio minute
+                  </p>
+                )}
                 {job.jobLink && (
                   <p>
                     <span className="font-medium">Job Link:</span>{" "}
