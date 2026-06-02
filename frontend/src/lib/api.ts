@@ -38,3 +38,30 @@ export async function getJobById(id: string) {
   }
   return response.json();
 }
+
+export async function getReporters(city?: string) {
+  const url = city ? `${API_URL}/reporters?city=${encodeURIComponent(city)}` : `${API_URL}/reporters`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch reporters: ${response.statusText}`);
+  }
+  return response.json();
+}
+
+export async function assignReporter(jobId: string, reporterId: number) {
+  const response = await fetch(`${API_URL}/jobs/${jobId}/assign-reporter`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ reporterId }),
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || data.message || "Failed to assign reporter");
+  }
+
+  return data;
+}
