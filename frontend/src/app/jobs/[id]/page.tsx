@@ -1,9 +1,10 @@
 import PageHeader from "@/components/PageHeader";
 import { getJobById } from "@/lib/api";
+import { Job } from "types";
 
 export default async function JobDetailPage({ params }: { params: { id: string } }) {
   const { id } = await params;
-  const { data: job } = await getJobById(id);
+  const { data: job } = await getJobById(id) as { data: Job };
 
   return (
     <>
@@ -30,7 +31,7 @@ export default async function JobDetailPage({ params }: { params: { id: string }
                 </span>
               </div>
 
-              <div className="space-y-2 text-gray-600">
+              <div className="space-y-2 text-gray-600 mb-4">
                 <p>
                   <span className="font-medium">Duration:</span> {job.durationMinutes} minutes
                 </p>
@@ -40,33 +41,31 @@ export default async function JobDetailPage({ params }: { params: { id: string }
                 <p>
                   <span className="font-medium">City:</span> {job.city}
                 </p>
-                {job.status !== 'NEW' && (
+                {job.reporterRateApplied && (
                   <p>
-                    <span className="font-medium">Pay Rate:</span> ${job.payRate} per audio minute
+                    <span className="font-medium">Reporter Pay Rate:</span> Rp {job.reporterRateApplied||0} per audio minute
                   </p>
                 )}
-                {job.jobLink && (
+                {job.editorId && (
                   <p>
-                    <span className="font-medium">Job Link:</span>{" "}
-                    <a
-                      href={job.jobLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      Open job
-                    </a>
+                    <span className="font-medium">Editor Fee:</span> Rp {job.editorFeeApplied||0}
                   </p>
                 )}
-                {job.notes && (
+                {job.totalPayout && (
                   <p>
-                    <span className="font-medium">Notes:</span> {job.notes}
+                    <span className="font-medium">Total Pay:</span> Rp {job.totalPayout||0}
                   </p>
                 )}
                 <p>
                   <span className="font-medium">Created At:</span>{" "}
-                  {new Date(job.createdAt).toLocaleString()}
+                  {job.createdAt ? new Date(job.createdAt).toLocaleString() : 'N/A'}
                 </p>
+              </div>
+
+              <div>
+                <button className="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600 cursor-pointer">
+                  Assign Reporter
+                </button>
               </div>
             </div>
           ) : (

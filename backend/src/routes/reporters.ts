@@ -9,6 +9,18 @@ export async function reporterRoutes(app: FastifyInstance) {
 
     // Get all reporters
     const reporters = await db.select().from(users).where(eq(users.role, "REPORTER"));
+
+    // If city query exists, sort reporters with matching city first
+    if (city) {
+      reporters.sort((a, b) => {
+        const aMatch = a.city.toLowerCase() === city.toLowerCase();
+        const bMatch = b.city.toLowerCase() === city.toLowerCase();
+        if (aMatch && !bMatch) return -1;
+        if (!aMatch && bMatch) return 1;
+        return 0;
+      });
+    }
+
     return reporters;
   });
 }
