@@ -24,3 +24,11 @@ export async function reporterRoutes(app: FastifyInstance) {
     return reporters;
   });
 }
+
+export async function editorRoutes(app: FastifyInstance) {
+  app.get("/", async (request, reply) => {
+    // Get all editors
+    const editors = await db.select().from(users).where(eq(users.role, "EDITOR"));
+    return editors;
+  });
+}

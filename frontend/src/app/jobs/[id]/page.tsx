@@ -1,18 +1,36 @@
 "use client";
 
 import PageHeader from "@/components/PageHeader";
-import { getJobById, getReporters, assignReporter } from "@/lib/api";
-import { Job, User } from "types";
+
+import { 
+  getJobById, 
+  getReporters, 
+  assignReporter, 
+  getEditors, 
+  assignEditor, 
+  updateJobStatus 
+} from "@/lib/api";
+
+import { Job, JobStatus, User } from "types";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AssignReporterModal from "./components/AssignReporterModal";
+
+const JOB_STATUS = {
+  NEW: 'NEW',
+  ASSIGNED: 'ASSIGNED',
+  TRANSCRIBED: 'TRANSCRIBED',
+  REVIEWED: 'REVIEWED',
+  COMPLETED: 'COMPLETED',
+} as const;
 
 export default function JobDetailPage() {
   const params = useParams();
   const [job, setJob] = useState<Job | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [assigningType, setAssigningType] = useState<'reporter' | 'editor'>('reporter');
   const [reporters, setReporters] = useState<User[]>([]);
   const [selectedReporterId, setSelectedReporterId] = useState<number | null>(null);
   const [isAssigning, setIsAssigning] = useState(false);
@@ -31,30 +49,56 @@ export default function JobDetailPage() {
     fetchJob();
   }, [params.id]);
 
-  const handleOpenModal = async () => {
+  const handleOpenModal = async (type: 'reporter' | 'editor') => {
+    setAssigningType(type);
     setIsModalOpen(true);
     try {
-      const response = await getReporters(job?.city);
-      const reportersData = Array.isArray(response) ? response : (response as any).data || [];
-      setReporters(Array.isArray(reportersData) ? reportersData : []);
+      let response;
+      if (type === 'reporter') {
+        response = await getReporters(job?.city);
+      } else {
+        response = await getEditors();
+      }
+      const usersData = Array.isArray(response) ? response : (response as any).data || [];
+      setReporters(Array.isArray(usersData) ? usersData : []);
     } catch (error) {
-      console.error("Failed to fetch reporters:", error);
+      console.error(`Failed to fetch ${type}s:`, error);
     }
   };
 
-  const handleAssignReporter = async () => {
+  const handleAssign = async () => {
     if (!selectedReporterId || !job) return;
-    
+
     setIsAssigning(true);
     try {
-      await assignReporter(params.id as string, selectedReporterId);
+      if (assigningType === 'reporter') {
+        await assignReporter(params.id as string, selectedReporterId);
+      } else {
+        await assignEditor(params.id as string, selectedReporterId);
+      }
       setIsModalOpen(false);
       setSelectedReporterId(null);
       // Refresh job data
       const response = await getJobById(params.id as string);
       setJob((response as any).data || response);
     } catch (error) {
-      console.error("Failed to assign reporter:", error);
+      console.error(`Failed to assign ${assigningType}:`, error);
+    } finally {
+      setIsAssigning(false);
+    }
+  };
+
+  const handleUpdateStatus = async (status: JobStatus) => {
+    if (!job) return;
+
+    setIsAssigning(true);
+    try {
+      await updateJobStatus(params.id as string, status);
+      // Refresh job data
+      const response = await getJobById(params.id as string);
+      setJob((response as any).data || response);
+    } catch (error) {
+      console.error(`Failed to update status:`, error);
     } finally {
       setIsAssigning(false);
     }
@@ -82,9 +126,9 @@ export default function JobDetailPage() {
                   </h2>
                 </div>
                 <span
-                  className={`px-3 py-1 rounded-full text-sm font-medium ${job.status === 'COMPLETED'
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${job.status === JOB_STATUS.COMPLETED
                     ? 'bg-green-100 text-green-800'
-                    : job.status === 'NEW'
+                    : job.status === JOB_STATUS.NEW
                       ? 'bg-blue-100 text-blue-800'
                       : 'bg-yellow-100 text-yellow-800'
                     }`}
@@ -104,14 +148,21 @@ export default function JobDetailPage() {
                   <span className="font-medium">City:</span> {job.city}
                 </p>
                 {job.reporterRateApplied && (
+                  <>
                   <p>
-                    <span className="font-medium">Reporter Pay Rate:</span> Rp {job.reporterRateApplied||0} per audio minute
+                    <span>Reporter:</span> 
                   </p>
+                    <p>
+                      <span className="font-medium">Reporter Pay Rate:</span> Rp {job.reporterRateApplied||0} per audio minute
+                    </p>
+                  </>
                 )}
                 {job.editorId && (
-                  <p>
-                    <span className="font-medium">Editor Fee:</span> Rp {job.editorFeeApplied||0}
-                  </p>
+                  <>
+                    <p>
+                      <span className="font-medium">Editor Fee:</span> Rp {job.editorFeeApplied||0}
+                    </p>
+                  </>
                 )}
                 {job.totalPayout && (
                   <p>
@@ -125,26 +176,52 @@ export default function JobDetailPage() {
               </div>
 
               <div className="space-y-3">
-                {job.status === 'NEW' && (
+                {job.status === JOB_STATUS.NEW && (
                   <div>
-                    <button 
-                      onClick={handleOpenModal}
+                    <button
+                      onClick={() => handleOpenModal('reporter')}
                       className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
                     >
                       Assign Reporter
                     </button>
                   </div>
                 )}
-                {job.status !== 'NEW' && !job.editorId && (
+                {job.status !== JOB_STATUS.NEW && !job.editorId && (
                   <div>
-                    <button 
-                      onClick={handleOpenModal}
+                    <button
+                      onClick={() => handleOpenModal('editor')}
                       className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
                     >
                       Assign Editor
                     </button>
                   </div>
                 )}
+                <div>
+                  {job.status === JOB_STATUS.ASSIGNED && (
+                    <button
+                      className="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 cursor-pointer"
+                      onClick={() => handleUpdateStatus(JOB_STATUS.TRANSCRIBED)}
+                    >
+                      Mark as {JOB_STATUS.TRANSCRIBED}
+                    </button>
+                  )}
+                  {job.status === JOB_STATUS.TRANSCRIBED && job.editorId && (
+                    <button
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
+                      onClick={() => handleUpdateStatus(JOB_STATUS.REVIEWED)}
+                    >
+                      Mark as {JOB_STATUS.REVIEWED}
+                    </button>
+                  )}
+                  {job.status === JOB_STATUS.REVIEWED && (
+                    <button
+                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 cursor-pointer"
+                      onClick={() => handleUpdateStatus(JOB_STATUS.COMPLETED)}
+                    >
+                      Mark as {JOB_STATUS.COMPLETED}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
@@ -161,8 +238,10 @@ export default function JobDetailPage() {
           setSelectedReporterId={setSelectedReporterId}
           reporters={reporters}
           setIsModalOpen={setIsModalOpen}
-          handleAssignReporter={handleAssignReporter}
+          handleAssignReporter={handleAssign}
           isAssigning={isAssigning}
+          title={assigningType === 'reporter' ? 'Assign Reporter' : 'Assign Editor'}
+          type={assigningType}
         />
       )}
     </>

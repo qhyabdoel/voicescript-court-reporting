@@ -1,7 +1,7 @@
 import fastify from 'fastify'
 import dotenv from 'dotenv'
 import cors from '@fastify/cors'
-import { reporterRoutes } from './routes/reporters.js'
+import { reporterRoutes, editorRoutes } from './routes/reporters.js'
 import { jobRoutes } from './routes/jobs.js'
 
 dotenv.config()
@@ -16,6 +16,7 @@ app.register(cors, {
 })
 
 app.register(reporterRoutes, { prefix: '/api/reporters' })
+app.register(editorRoutes, { prefix: '/api/editors' })
 app.register(jobRoutes, { prefix: '/api/jobs' })
 
 const start = async () => {

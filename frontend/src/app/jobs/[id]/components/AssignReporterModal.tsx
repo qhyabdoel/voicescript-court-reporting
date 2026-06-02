@@ -1,35 +1,39 @@
 import { User } from "types";
 
 export default function AssignReporterModal({
-  selectedReporterId, 
+  selectedReporterId,
   setSelectedReporterId,
   reporters,
   setIsModalOpen,
   handleAssignReporter,
   isAssigning,
-}: { 
-  selectedReporterId: number | null, 
+  title,
+  type,
+}: {
+  selectedReporterId: number | null,
   setSelectedReporterId: (id: number | null) => void,
   reporters: User[],
   setIsModalOpen: (open: boolean) => void,
   handleAssignReporter: () => void,
   isAssigning: boolean,
+  title: string,
+  type: 'reporter' | 'editor',
 }) {
   return (
     <div className="fixed inset-0 bg-black/50 flex justify-center pt-32 z-50 text-gray-800">
           <div className="bg-white rounded-lg p-6 w-full max-w-md h-fit">
-            <h3 className="text-lg font-semibold mb-4">Assign Reporter</h3>
+            <h3 className="text-lg font-semibold mb-4">{title}</h3>
             
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Reporter
+                Select {type === 'reporter' ? 'Reporter' : 'Editor'}
               </label>
               <select
                 value={selectedReporterId || ""}
                 onChange={(e) => setSelectedReporterId(Number(e.target.value))}
                 className="w-full border border-gray-300 rounded px-3 py-2"
               >
-                <option value="">Select a reporter</option>
+                <option value="">Select a {type === 'reporter' ? 'reporter' : 'editor'}</option>
                 {reporters.map((reporter) => (
                   <option key={reporter.id} value={reporter.id}>
                     {reporter.name} - {reporter.city} (Rp {reporter.basePayRate}/min)
